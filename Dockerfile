@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # On copie le fichier requirements.txt de ton PC vers le conteneur
-COPY requirements.txt .
+COPY requiregddhdhfments.txt .
 
 # On installe Flask (Docker va lire le fichier requirements.txt)
 RUN pip install --no-cache-dir -r requirements.txt
