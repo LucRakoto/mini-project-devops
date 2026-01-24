@@ -9,12 +9,12 @@ db = Redis(host='redis', port=6379, decode_responses=True)
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
-<head><title>Ma Liste DevOps</title></head>
+<head><title>Ma Liste des taches</title></head>
 <body>
     <h1>Ma Liste de Tâches CRUD</h1>
     <form action="/add" method="POST">
         <input type="text" name="task" placeholder="Nouvelle tâche..." required>
-        <button type="submit">Ajouter</button>
+        <button type="submit">Ajouter une tache</button>
     </form>
     <ul>
         {% for task in tasks %}
