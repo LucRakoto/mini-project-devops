@@ -10,8 +10,7 @@ services:
       - PYTHONUNBUFFERED=1
   redis:
     image: "redis:alpine"
-    command: redis-server --requirepass mon_mot_de_passe_secret
-    volumes:
+    command: redis-server --requirepass ${REDIS_PASSWORD}
       - redis_data:/data  # On branche le disque dur virtuel ici
 
 volumes:
