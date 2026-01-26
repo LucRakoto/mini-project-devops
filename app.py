@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template_string, request, redirect, url_for
 from redis import Redis
 
@@ -5,13 +6,15 @@ app = Flask(__name__)
 # On se connecte à Redis (le nom du service dans docker-compose)
 db = Redis(host='redis', port=6379, decode_responses=True)
 
+#recuperation de la variable
+app_title = os.getenv('APP_TITLE', 'Ma Liste de Tâches')
 # Interface HTML simple intégrée
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
-<head><title>Ma Liste des taches</title></head>
+<head><title>{{{{ app_title }}}}</title></head>
 <body>
-    <h1>Ma Liste de Tâches CRUD</h1>
+    <h1>{app_title}</h1>
     <form action="/add" method="POST">
         <input type="text" name="task" placeholder="Nouvelle tâche..." required>
         <button type="submit">Ajouter une tache</button>

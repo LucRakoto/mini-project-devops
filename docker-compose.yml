@@ -3,6 +3,8 @@ services:
     image: "luc004/mini-project:latest"
     ports:
       - "5000:5000"
+    environment:
+      - APP_TITLE=Le Dashboard de Génie de Luc
   redis:
     image: "redis:alpine"
     volumes:
