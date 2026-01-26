@@ -4,7 +4,14 @@ from redis import Redis
 
 app = Flask(__name__)
 # Connexion à Redis
-db = Redis(host='redis', port=6379, decode_responses=True)
+redis_pass = os.getenv('REDIS_PASSWORD') # Récupère le secret
+
+db = Redis(
+    host=os.getenv('REDIS_HOST', 'redis'), 
+    port=6379, 
+    password=redis_pass,  # Utilise le secret ici
+    decode_responses=True
+)
 
 # Variable d'environnement pour le titre
 app_title = os.getenv('APP_TITLE', 'Ma Liste de Tâches')

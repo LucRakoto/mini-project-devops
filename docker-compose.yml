@@ -4,10 +4,13 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - APP_TITLE=Le Dashboard de Génie de Luc
+      - APP_TITLE=Securisation du site
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=mon_mot_de_passe_secret
       - PYTHONUNBUFFERED=1
   redis:
     image: "redis:alpine"
+    command: redis-server --requirepass mon_mot_de_passe_secret
     volumes:
       - redis_data:/data  # On branche le disque dur virtuel ici
 
