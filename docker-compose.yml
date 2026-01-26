@@ -5,6 +5,7 @@ services:
       - "5000:5000"
     environment:
       - APP_TITLE=Le Dashboard de Génie de Luc
+      - PYTHONUNBUFFERED=1
   redis:
     image: "redis:alpine"
     volumes:
