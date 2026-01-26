@@ -1,7 +1,12 @@
 services:
   web:
-    image: "luc004/mini-project:latest" # On utilise l'image du Cloud !
+    image: "luc004/mini-project:latest"
     ports:
       - "5000:5000"
   redis:
     image: "redis:alpine"
+    volumes:
+      - redis_data:/data  # On branche le disque dur virtuel ici
+
+volumes:
+  redis_data:             # On déclare le volume
