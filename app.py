@@ -19,18 +19,19 @@ app_title = os.getenv('APP_TITLE', 'Ma Liste de Tâches')
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
-<head><title>{{ title }}</title></head>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        li { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
 <body>
-    <h1>{{ title }}</h1>
-    <form action="/add" method="POST">
-        <input type="text" name="task" placeholder="Nouvelle tâche..." required>
-        <button type="submit">Ajouter</button>
-    </form>
-    <ul>
-        {% for task in tasks %}
-            <li>{{ task }} <a href="/delete/{{ task }}">[Supprimer]</a></li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <h1>{{ title }}</h1>
+        </div>
 </body>
 </html>
 '''

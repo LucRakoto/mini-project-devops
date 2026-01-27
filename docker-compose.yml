@@ -4,14 +4,18 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - REDIS_PASSWORD=1234
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - APP_TITLE=${APP_TITLE}
       - REDIS_HOST=redis
       - PYTHONUNBUFFERED=1
+
   redis:
     image: "redis:alpine"
-    command: 
-    - redis-server --requirepass 1234
-    - redis_data:/data  # On branche le disque dur virtuel ici
+    # Correction ici : la commande doit être sur une seule ligne
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    # Correction ici : volumes doit être une section à part
+    volumes:
+      - redis_data:/data
 
 volumes:
-  redis_data:             # On déclare le volume
+  redis_data:
