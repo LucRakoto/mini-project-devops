@@ -3,42 +3,45 @@ from flask import Flask, render_template_string, request, redirect, url_for
 from redis import Redis
 
 app = Flask(__name__)
-# Connexion à Redis
-redis_pass = os.getenv('REDIS_PASSWORD') # Récupère le secret
 
+# Connexion à Redis via variables d'environnement
+redis_pass = os.getenv('REDIS_PASSWORD')
 db = Redis(
     host=os.getenv('REDIS_HOST', 'redis'), 
     port=6379, 
-    password=redis_pass,  # Utilise le secret ici
+    password=redis_pass, 
     decode_responses=True
 )
 
-# Variable d'environnement pour le titre
 app_title = os.getenv('APP_TITLE', 'Ma Liste de Tâches')
+
+# Le template avec CSS, Formulaire et Liste intégrés
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
     <title>{{ title }}</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 50px; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h1 { color: #1c1e21; margin-top: 0; }
-        form { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
-        button { background-color: #1877f2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #166fe5; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 450px; }
+        h1 { color: #2d3436; margin-bottom: 25px; font-size: 24px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
+        input[type="text"] { flex-grow: 1; padding: 12px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; }
+        input[type="text"]:focus { border-color: #0984e3; }
+        button { background-color: #0984e3; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #74b9ff; }
         ul { list-style: none; padding: 0; }
-        li { background: #fff; margin-bottom: 8px; padding: 12px; border-radius: 6px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { color: #ff4d4d; text-decoration: none; font-size: 0.8em; font-weight: bold; }
+        li { background: #fff; margin-bottom: 10px; padding: 15px; border-radius: 8px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .delete-btn { color: #d63031; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .delete-btn:hover { color: #ff7675; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <h1>{{ title }}</h1>
         
-        <form action="/add" method="POST">
-            <input type="text" name="task" placeholder="Quelle est la prochaine étape ?" required>
+        <form action="/add" method="POST" class="input-group">
+            <input type="text" name="task" placeholder="Que faut-il faire ?" required>
             <button type="submit">Ajouter</button>
         </form>
 
@@ -73,5 +76,4 @@ def delete(task):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # On lance l'app sur le port 5000
     app.run(host='0.0.0.0', port=5000)
