@@ -1,6 +1,8 @@
 import os
 from flask import Flask, render_template_string, request, redirect, url_for
 from redis import Redis
+import json
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -45,29 +47,40 @@ HTML_TEMPLATE = '''
             <button type="submit">Ajouter</button>
         </form>
 
-        <ul>
+       <ul>
             {% for task in tasks %}
                 <li>
-                    <span>{{ task }}</span>
-                    <a href="/delete/{{ task }}" class="delete-btn">Supprimer</a>
+                    <div>
+                        <strong>{{ task.content }}</strong> <br>
+                        <small style="color: #636e72;">Ajouté le : {{ task.date }}</small>
+                    </div>
+                    <a href="/delete/{{ task.content }}" class="delete-btn">Supprimer</a>
                 </li>
             {% endfor %}
-        </ul>
+       </ul>
     </div>
 </body>
 </html>
 '''
-
 @app.route('/')
 def index():
-    tasks = db.lrange('tasks', 0, -1)
+    raw_tasks = db.lrange('tasks', 0, -1)
+    tasks = []
+    for item in raw_tasks:
+        tasks.append(json.loads(item)) # On retransforme le texte en objet Python
     return render_template_string(HTML_TEMPLATE, tasks=tasks, title=app_title)
 
 @app.route('/add', methods=['POST'])
 def add():
-    task = request.form.get('task')
-    if task:
-        db.rpush('tasks', task)
+    task_text = request.form.get('task')
+    if task_text:
+        # On crée un dictionnaire (objet) avec le texte et la date
+        task_data = {
+            "content": task_text,
+            "date": datetime.now().strftime("%d/%m %H:%M") # Format: Jour/Mois Heure:Min
+        }
+        # On transforme l'objet en texte JSON pour Redis
+        db.rpush('tasks', json.dumps(task_data))
     return redirect(url_for('index'))
 
 @app.route('/delete/<task>')
