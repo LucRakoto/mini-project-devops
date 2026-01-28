@@ -5,7 +5,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PASSWORD=pass123
       - APP_TITLE=${APP_TITLE}
       - REDIS_HOST=redis
       - PYTHONUNBUFFERED=1
