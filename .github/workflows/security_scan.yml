@@ -1,0 +1,20 @@
+name: Security Scan IA
+
+on: [push] # Se lance à chaque fois que tu fais un 'git push'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Lancer l'Analyse de Sécurité
+        run: |
+          # Ici, on demande à Python de tester notre code avec ton scanner
+          python -c "from scanner import VulnerabilityScanner; s=VulnerabilityScanner(); print(s.scan(open('app.py').read()))"

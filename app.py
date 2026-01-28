@@ -5,7 +5,7 @@ from datetime import datetime
 from scanner import VulnerabilityScanner # On importe ton nouveau module !
 
 app = Flask(__name__)
-db = Redis(host=os.getenv('REDIS_HOST', 'redis'), port=6379, decode_responses=True)
+db = Redis(host=os.getenv('REDIS_HOST', 'redis'), port=6379, password=os.getenv('REDIS_PASSWORD'), decode_responses=True)
 ia_scanner = VulnerabilityScanner() # On initialise l'IA
 
 @app.route('/')
