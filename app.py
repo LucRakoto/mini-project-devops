@@ -28,3 +28,7 @@ def analyze():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    
+    
+# Simulation d'une faille critique pour le test de sabotage
+query_danger = "SELECT * FROM users WHERE id = '" + user_id + "' OR 1=1 --"
