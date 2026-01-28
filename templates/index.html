@@ -1,84 +1,28 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberScan IA - Dashboard Pro</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .stat-card { border-radius: 12px; transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .vulnerable { color: #d63031; font-weight: bold; }
-        .secure { color: #27ae60; font-weight: bold; }
-        .scan-item { border-left: 5px solid #bdc3c7; margin-bottom: 10px; background: white; }
-        .border-danger { border-left-color: #d63031 !important; }
-        .border-success { border-left-color: #27ae60 !important; }
-    </style>
+    <title>Dashboard Securite</title>
 </head>
 <body class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">🛡️ CyberScan <span class="text-primary">IA</span></h1>
-        <span class="badge bg-dark">Statut Système : Opérationnel</span>
+    <div class="row mb-4 text-center">
+        <div class="col"> <div class="card p-2">Total: {{ total }}</div> </div>
+        <div class="col"> <div class="card p-2 bg-danger text-white">Alertes: {{ alerts }}</div> </div>
+        <div class="col"> <div class="card p-2 bg-success text-white">Score: {{ health }}%</div> </div>
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-3 border-0">
-                <small class="text-muted text-uppercase fw-bold">Analyses Totales</small>
-                <h2 class="mb-0 text-primary">{{ total }}</h2>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-3 border-0 bg-white">
-                <small class="text-muted text-uppercase fw-bold">Menaces Détectées</small>
-                <h2 class="mb-0 text-danger">{{ alerts }}</h2>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-3 border-0 bg-primary text-white">
-                <small class="text-white-50 text-uppercase fw-bold">Santé du Code</small>
-                <h2 class="mb-0">{{ health }}%</h2>
-            </div>
-        </div>
-    </div>
+    <form action="/scan" method="post" class="mb-4">
+        <textarea name="code" class="form-control mb-2" rows="5"></textarea>
+        <button class="btn btn-primary w-100">Analyser</button>
+    </form>
 
-    
-
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Nouvelle Analyse de Code</h5>
-            <form action="/scan" method="post">
-                <textarea name="code" class="form-control mb-3" rows="6" placeholder="Collez votre code Python ici pour l'analyser..."></textarea>
-                <button type="submit" class="btn btn-primary w-100 fw-bold">Lancer le Diagnostic</button>
-            </form>
-        </div>
-    </div>
-
-    <h4 class="mb-3">Historique des Analyses</h4>
-    <div class="list-group shadow-sm">
-        {% for scan in scans %}
-        <div class="list-group-item scan-item p-3 {{ 'border-danger' if '❌' in scan.result else 'border-success' }}">
-            <div class="d-flex justify-content-between align-items-center">
-                <h6 class="mb-1 {{ 'vulnerable' if '❌' in scan.result else 'secure' }}">
-                    {{ scan.result }}
-                </h6>
-                <small class="text-muted">{{ scan.timestamp }}</small>
-            </div>
-            
-            <p class="mb-2 text-secondary small" style="font-family: monospace; background: #f8f9fa; padding: 5px;">
-                {{ scan.code[:150] }}{% if scan.code|length > 150 %}...{% endif %}
-            </p>
-
-            {% if '❌' in scan.result %}
-            <div class="alert alert-light border-start border-warning py-1 px-2 mb-0 mt-2">
-                <small>💡 <strong>Conseil :</strong> Utilisez des paramètres de requête sécurisés pour bloquer cette injection.</small>
-            </div>
-            {% endif %}
+    <div class="list-group">
+        {% for s in scans %}
+        <div class="list-group-item">
+            <strong>{{ s.result }}</strong> - <small>{{ s.timestamp }}</small>
+            <pre class="small bg-light p-2">{{ s.code[:100] }}</pre>
         </div>
         {% endfor %}
     </div>
-
 </body>
 </html>
