@@ -1,6 +1,6 @@
 name: Security Scan IA
 
-on: [push] # Se lance à chaque fois que tu fais un 'git push'
+on: [push]
 
 jobs:
   scan:
@@ -16,5 +16,16 @@ jobs:
 
       - name: Lancer l'Analyse de Sécurité
         run: |
-          # Ici, on demande à Python de tester notre code avec ton scanner
-          python -c "from scanner import VulnerabilityScanner; s=VulnerabilityScanner(); print(s.scan(open('app.py').read()))"
+          python -c "
+          from scanner import VulnerabilityScanner
+          s = VulnerabilityScanner()
+          # On lit le fichier app.py que tu viens de pusher
+          code = open('app.py').read()
+          result = s.scan(code)
+          print(f'Verdict: {result}')
+          
+          # Si le résultat contient autre chose que SÉCURISÉ, on bloque tout
+          if 'SÉCURISÉ' not in result:
+              print('--- ALERTE ROUGE : FAILLE DÉTECTÉE ! ---')
+              exit(1)
+          "
