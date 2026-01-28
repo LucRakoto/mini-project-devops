@@ -32,3 +32,4 @@ if __name__ == '__main__':
     
 # Simulation d'une faille critique pour le test de sabotage
 query_danger = "SELECT * FROM users WHERE id = '" + user_id + "' OR 1=1 --"
+SECRET_KEY = "mon_password_en_clair"
