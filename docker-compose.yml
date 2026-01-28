@@ -1,6 +1,7 @@
 services:
   web:
     image: "luc004/mini-project:latest"
+    build: .
     ports:
       - "5000:5000"
     environment:
@@ -8,7 +9,8 @@ services:
       - APP_TITLE=${APP_TITLE}
       - REDIS_HOST=redis
       - PYTHONUNBUFFERED=1
-
+    depends_on:
+      - redis
   redis:
     image: "redis:alpine"
     # Correction ici : la commande doit être sur une seule ligne

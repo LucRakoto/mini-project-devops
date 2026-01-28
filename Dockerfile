@@ -3,18 +3,24 @@ FROM python:3.9-slim AS builder
 
 WORKDIR /app
 COPY requirements.txt .
-# On installe les dépendances dans un dossier local
+# On installe les dépendances
 RUN pip install --user --no-cache-dir -r requirements.txt
 
 # ÉTAPE 2 : L'image finale (le coureur)
 FROM python:3.9-slim
 
 WORKDIR /app
-# On récupère seulement ce qui est nécessaire depuis l'étape précédente
+
+# 1. On récupère les bibliothèques installées
 COPY --from=builder /root/.local /root/.local
-COPY app.py .
+
+# 2. MODIFICATION ICI : On copie TOUT le projet (app.py, scanner.py, templates/)
+# Le premier "." est ton dossier sur ton PC, le second "." est le dossier /app dans Docker
+COPY . . 
 
 # On s'assure que Python trouve nos bibliothèques
 ENV PATH=/root/.local/bin:$PATH
+# On force Python à afficher les logs en temps réel (pratique pour le débug)
+ENV PYTHONUNBUFFERED=1
 
 CMD ["python", "app.py"]
