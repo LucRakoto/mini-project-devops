@@ -1,4 +1,5 @@
 import os, json
+import re
 from flask import Flask, render_template_string, request, redirect, url_for
 from redis import Redis
 from datetime import datetime
@@ -10,10 +11,31 @@ db = Redis(host=os.getenv('REDIS_HOST', 'redis'), port=6379,
 # --- NOTRE SIMULATION D'IA ---
 def analyze_code(code):
     issues = []
-    if "password" in code.lower(): issues.append("Password Leak")
-    if "eval(" in code.lower(): issues.append("Code Injection")
-    return "SAFE" if not issues else f"VULNERABLE: {', '.join(issues)}"
+    code_lower = code.lower()
 
+    # 1. Détection de mots-clés simples (ce qu'on avait déjà)
+    if "password" in code_lower: 
+        issues.append("Fuite de mot de passe")
+
+    # 2. Détection d'Injection SQL (Nouveau !)
+    # On cherche des patterns comme ' OR ' ou ' --' ou 'DROP TABLE'
+    sql_patterns = [
+        r"'.*or.*=.*",      # Détecte le fameux ' OR 1=1
+        r"--",              # Détecte les commentaires SQL pour bypasser
+        r"drop\s+table",    # Détecte une tentative de suppression de table
+        r"union\s+select"   # Détecte une tentative de vol de données
+    ]
+    
+    for pattern in sql_patterns:
+        if re.search(pattern, code_lower):
+            issues.append("Injection SQL potentielle")
+            break # On s'arrête si on en trouve une
+
+    # 3. Détection de faille XSS (Scripts malveillants)
+    if "<script>" in code_lower:
+        issues.append("Script malveillant (XSS)")
+
+    return "✅ SÉCURISÉ" if not issues else f"❌ VULNÉRABLE : {', '.join(issues)}"
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
