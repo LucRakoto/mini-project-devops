@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberScan IA - Dashboard de Stage</title>
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --text-main: #c9d1d9;
+            --accent: #58a6ff;
+            --danger: #ff7b72;
+            --success: #3fb950;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        .header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
+        .header p { color: #8b949e; margin: 5px 0 0; }
+        
+        .scan-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        textarea { width: 100%; height: 120px; background: var(--bg-dark); color: #a5d6ff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: 'Courier New', monospace; box-sizing: border-box; resize: vertical; }
+        button { background: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.2s; }
+        button:hover { background: #2ea043; }
+
+        .report-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .code-preview { font-family: monospace; background: #0d1117; padding: 4px 8px; border-radius: 4px; color: #79c0ff; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-vulnerable { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .status-safe { background: rgba(63, 185, 80, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .date { color: #8b949e; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 CyberScan v1.0</h1>
+            <p>Analyseur de vulnérabilités IA pour Pipeline CI/CD</p>
+        </div>
+
+        <div class="scan-box">
+            <form action="/analyze" method="POST">
+                <textarea name="code_snippet" placeholder="Collez votre code source ici pour une analyse de sécurité..." required></textarea>
+                <button type="submit">Lancer le scan de sécurité</button>
+            </form>
+        </div>
+
+        <h2>Historique des analyses</h2>
+        <div id="results">
+            {% for report in reports %}
+                <div class="report-card">
+                    <div>
+                        <span class="code-preview">{{ report.preview }}...</span>
+                        <div class="date">Analysé à : {{ report.date }}</div>
+                    </div>
+                    <div class="status-badge {{ 'status-vulnerable' if '❌' in report.result else 'status-safe' }}">
+                        {{ report.result }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,95 +1,29 @@
 import os, json
-import re
-from flask import Flask, render_template_string, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from redis import Redis
 from datetime import datetime
+from scanner import VulnerabilityScanner # On importe ton nouveau module !
 
 app = Flask(__name__)
-db = Redis(host=os.getenv('REDIS_HOST', 'redis'), port=6379, 
-           password=os.getenv('REDIS_PASSWORD'), decode_responses=True)
-
-# --- NOTRE SIMULATION D'IA ---
-def analyze_code(code):
-    issues = []
-    code_lower = code.lower()
-
-    # 1. Détection de mots-clés simples (ce qu'on avait déjà)
-    if "password" in code_lower: 
-        issues.append("Fuite de mot de passe")
-
-    # 2. Détection d'Injection SQL (Nouveau !)
-    # On cherche des patterns comme ' OR ' ou ' --' ou 'DROP TABLE'
-    sql_patterns = [
-        r"'.*or.*=.*",      # Détecte le fameux ' OR 1=1
-        r"--",              # Détecte les commentaires SQL pour bypasser
-        r"drop\s+table",    # Détecte une tentative de suppression de table
-        r"union\s+select"   # Détecte une tentative de vol de données
-    ]
-    
-    for pattern in sql_patterns:
-        if re.search(pattern, code_lower):
-            issues.append("Injection SQL potentielle")
-            break # On s'arrête si on en trouve une
-
-    # 3. Détection de faille XSS (Scripts malveillants)
-    if "<script>" in code_lower:
-        issues.append("Script malveillant (XSS)")
-
-    return "✅ SÉCURISÉ" if not issues else f"❌ VULNÉRABLE : {', '.join(issues)}"
-HTML_TEMPLATE = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>CyberScan IA</title>
-    <style>
-        body { font-family: 'Courier New', monospace; background-color: #0d1117; color: #c9d1d9; padding: 40px; }
-        .container { background: #161b22; padding: 25px; border-radius: 8px; border: 1px solid #30363d; max-width: 700px; margin: auto; }
-        h1 { color: #58a6ff; }
-        textarea { width: 100%; height: 100px; background: #0d1117; color: #a5d6ff; border: 1px solid #30363d; border-radius: 5px; padding: 10px; margin-bottom: 10px; }
-        button { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
-        .result { font-size: 0.8em; color: #8b949e; }
-        .status { font-weight: bold; color: #ff7b72; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🔍 CyberScan CI/CD</h1>
-        <form action="/analyze" method="POST">
-            <textarea name="code_snippet" placeholder="Collez le code à analyser ici..." required></textarea>
-            <button type="submit">Lancer l'Analyse IA</button>
-        </form>
-        <hr style="border: 0.5px solid #30363d; margin: 20px 0;">
-        <ul>
-            {% for report in reports %}
-                <li>
-                    <strong>Code:</strong> {{ report.preview }}... <br>
-                    <span class="status">Résultat: {{ report.result }}</span> <br>
-                    <span class="result">Date: {{ report.date }}</span>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-</body>
-</html>
-'''
+db = Redis(host=os.getenv('REDIS_HOST', 'redis'), port=6379, decode_responses=True)
+ia_scanner = VulnerabilityScanner() # On initialise l'IA
 
 @app.route('/')
 def index():
     raw_data = db.lrange('scans', 0, -1)
     reports = [json.loads(r) for r in raw_data]
-    return render_template_string(HTML_TEMPLATE, reports=reports)
+    return render_template('index.html', reports=reports) # On utilise un vrai fichier HTML !
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
     code = request.form.get('code_snippet')
     if code:
-        result = analyze_code(code) # Appel de notre "IA"
-        data = {
+        result = ia_scanner.scan(code) # L'IA travaille ici
+        db.rpush('scans', json.dumps({
             "preview": code[:30], 
             "result": result,
             "date": datetime.now().strftime("%H:%M:%S")
-        }
-        db.rpush('scans', json.dumps(data))
+        }))
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
