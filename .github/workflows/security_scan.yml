@@ -1,39 +1,22 @@
 name: Security Scan IA
-
 on: [push]
-
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
-
-      - name: Installer Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
-      - name: Lancer l'Analyse de Sécurité
+      - name: Lancer le Scan
         run: |
           python -c "
-          try:
-              from scanner import VulnerabilityScanner
-              s = VulnerabilityScanner()
-              # Analyse du fichier principal
-              with open('app.py', 'r', encoding='utf-8') as f:
-                  code = f.read()
-              
-              result = s.scan(code)
-              print(f'Verdict: {result}')
-              
-              # Logique binaire : Si on détecte une 'Alerte', on bloque
-              if 'Alerte' in result:
-                  print('--- ECHEC : UNE FAILLE DE SECURITE A ETE DETECTEE ---')
-                  exit(1)
-              
-              print('--- SUCCES : AUCUNE FAILLE DETECTEE ---')
-          except Exception as e:
-              print(f'Erreur lors du scan : {e}')
+          from scanner import VulnerabilityScanner
+          s = VulnerabilityScanner()
+          with open('app.py', 'r') as f:
+              code = f.read()
+          res = s.scan(code)
+          print(f'Verdict: {res}')
+          if 'Alerte' in res:
               exit(1)
           "

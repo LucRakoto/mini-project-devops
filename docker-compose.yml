@@ -1,23 +1,13 @@
 services:
   web:
-    image: "luc004/mini-project:latest"
     build: .
     ports:
       - "5000:5000"
     environment:
-      - REDIS_PASSWORD=pass123
-      - APP_TITLE=${APP_TITLE}
-      - REDIS_HOST=redis
-      - PYTHONUNBUFFERED=1
+      - REDIS_PASSWORD=pass123 # C'est ici que Python va lire la valeur
     depends_on:
       - redis
-  redis:
-    image: "redis:alpine"
-    # Correction ici : la commande doit être sur une seule ligne
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    # Correction ici : volumes doit être une section à part
-    volumes:
-      - redis_data:/data
 
-volumes:
-  redis_data:
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass pass123 # Mot de passe Redis

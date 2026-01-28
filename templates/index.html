@@ -1,59 +1,29 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <title>Audit de Securite</title>
-    <style>
-        .card { border-radius: 10px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .list-group-item { border-left: 5px solid #dee2e6; margin-bottom: 8px; border-radius: 5px !important; }
-        .border-danger { border-left-color: #dc3545 !important; }
-        .border-success { border-left-color: #198754 !important; }
-    </style>
+    <title>Securite Dashboard</title>
 </head>
 <body class="bg-light container py-4">
-    <h2 class="mb-4 text-center">🛡️ Moniteur de Securite</h2>
-
     <div class="row mb-4 text-center">
-        <div class="col-md-4"> 
-            <div class="card p-3">
-                <small class="text-muted">TOTAL</small>
-                <h3 class="fw-bold">{{ total }}</h3>
-            </div> 
-        </div>
-        <div class="col-md-4"> 
-            <div class="card p-3 bg-danger text-white">
-                <small>DETECTIONS</small>
-                <h3 class="fw-bold">{{ alerts }}</h3>
-            </div> 
-        </div>
-        <div class="col-md-4"> 
-            <div class="card p-3 bg-success text-white">
-                <small>QUALITE</small>
-                <h3 class="fw-bold">{{ health }}%</h3>
-            </div> 
-        </div>
+        <div class="col-md-4"><div class="card p-3 shadow-sm">Total: {{ total }}</div></div>
+        <div class="col-md-4"><div class="card p-3 shadow-sm bg-danger text-white">Alertes: {{ alerts }}</div></div>
+        <div class="col-md-4"><div class="card p-3 shadow-sm bg-success text-white">Sante: {{ health }}%</div></div>
     </div>
-
-    <div class="card p-4 mb-4">
-        <form action="/scan" method="post">
-            <textarea name="code" class="form-control mb-3" rows="5" placeholder="Collez le code Python a tester..."></textarea>
-            <button class="btn btn-dark w-100 fw-bold">ANALYSOR LE CODE</button>
+    <div class="card p-4 shadow-sm mb-4">
+        <form action="/scan" method="POST">
+            <textarea name="code" class="form-control mb-3" rows="4" placeholder="Code Python..."></textarea>
+            <button class="btn btn-primary w-100 fw-bold">ANALYSER</button>
         </form>
     </div>
-
-    <h5 class="mb-3 text-secondary">Historique des analyses</h5>
     <div class="list-group">
         {% for s in scans %}
-        <div class="list-group-item bg-white shadow-sm {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold {{ 'text-danger' if 'Alerte' in s.result else 'text-success' }}">
-                    {{ s.result }}
-                </span>
+        <div class="list-group-item {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}">
+            <div class="d-flex justify-content-between">
+                <strong>{{ s.result }}</strong>
                 <small class="text-muted">{{ s.timestamp }}</small>
             </div>
-            <pre class="small bg-light p-2 mt-2 rounded" style="max-height: 80px; overflow: hidden;">{{ s.code[:150] }}...</pre>
+            <pre class="mt-2 small text-secondary">{{ s.code[:100] }}</pre>
         </div>
         {% endfor %}
     </div>
