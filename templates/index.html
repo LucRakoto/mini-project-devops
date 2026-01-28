@@ -3,64 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberScan IA - Dashboard de Stage</title>
+    <title>CyberScan IA - Dashboard Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        :root {
-            --bg-dark: #0d1117;
-            --card-bg: #161b22;
-            --border: #30363d;
-            --text-main: #c9d1d9;
-            --accent: #58a6ff;
-            --danger: #ff7b72;
-            --success: #3fb950;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; }
-        .header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
-        .header p { color: #8b949e; margin: 5px 0 0; }
-        
-        .scan-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 30px; }
-        textarea { width: 100%; height: 120px; background: var(--bg-dark); color: #a5d6ff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: 'Courier New', monospace; box-sizing: border-box; resize: vertical; }
-        button { background: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.2s; }
-        button:hover { background: #2ea043; }
-
-        .report-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .code-preview { font-family: monospace; background: #0d1117; padding: 4px 8px; border-radius: 4px; color: #79c0ff; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-vulnerable { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .status-safe { background: rgba(63, 185, 80, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .date { color: #8b949e; font-size: 12px; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .stat-card { border-radius: 12px; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .vulnerable { color: #d63031; font-weight: bold; }
+        .secure { color: #27ae60; font-weight: bold; }
+        .scan-item { border-left: 5px solid #bdc3c7; margin-bottom: 10px; background: white; }
+        .border-danger { border-left-color: #d63031 !important; }
+        .border-success { border-left-color: #27ae60 !important; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🔍 CyberScan v1.0</h1>
-            <p>Analyseur de vulnérabilités IA pour Pipeline CI/CD</p>
-        </div>
+<body class="container py-4">
 
-        <div class="scan-box">
-            <form action="/analyze" method="POST">
-                <textarea name="code_snippet" placeholder="Collez votre code source ici pour une analyse de sécurité..." required></textarea>
-                <button type="submit">Lancer le scan de sécurité</button>
-            </form>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">🛡️ CyberScan <span class="text-primary">IA</span></h1>
+        <span class="badge bg-dark">Statut Système : Opérationnel</span>
+    </div>
 
-        <h2>Historique des analyses</h2>
-        <div id="results">
-            {% for report in reports %}
-                <div class="report-card">
-                    <div>
-                        <span class="code-preview">{{ report.preview }}...</span>
-                        <div class="date">Analysé à : {{ report.date }}</div>
-                    </div>
-                    <div class="status-badge {{ 'status-vulnerable' if '❌' in report.result else 'status-safe' }}">
-                        {{ report.result }}
-                    </div>
-                </div>
-            {% endfor %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm p-3 border-0">
+                <small class="text-muted text-uppercase fw-bold">Analyses Totales</small>
+                <h2 class="mb-0 text-primary">{{ total }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm p-3 border-0 bg-white">
+                <small class="text-muted text-uppercase fw-bold">Menaces Détectées</small>
+                <h2 class="mb-0 text-danger">{{ alerts }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm p-3 border-0 bg-primary text-white">
+                <small class="text-white-50 text-uppercase fw-bold">Santé du Code</small>
+                <h2 class="mb-0">{{ health }}%</h2>
+            </div>
         </div>
     </div>
+
+    
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Nouvelle Analyse de Code</h5>
+            <form action="/scan" method="post">
+                <textarea name="code" class="form-control mb-3" rows="6" placeholder="Collez votre code Python ici pour l'analyser..."></textarea>
+                <button type="submit" class="btn btn-primary w-100 fw-bold">Lancer le Diagnostic</button>
+            </form>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Historique des Analyses</h4>
+    <div class="list-group shadow-sm">
+        {% for scan in scans %}
+        <div class="list-group-item scan-item p-3 {{ 'border-danger' if '❌' in scan.result else 'border-success' }}">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-1 {{ 'vulnerable' if '❌' in scan.result else 'secure' }}">
+                    {{ scan.result }}
+                </h6>
+                <small class="text-muted">{{ scan.timestamp }}</small>
+            </div>
+            
+            <p class="mb-2 text-secondary small" style="font-family: monospace; background: #f8f9fa; padding: 5px;">
+                {{ scan.code[:150] }}{% if scan.code|length > 150 %}...{% endif %}
+            </p>
+
+            {% if '❌' in scan.result %}
+            <div class="alert alert-light border-start border-warning py-1 px-2 mb-0 mt-2">
+                <small>💡 <strong>Conseil :</strong> Utilisez des paramètres de requête sécurisés pour bloquer cette injection.</small>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
 </body>
 </html>
