@@ -2,57 +2,99 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <title>Analyseur Sec</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Cyber-Audit Pro</title>
     <style>
-        /* Ajout de styles pour corriger les bordures de l'historique */
-        .list-group-item { border-left-width: 8px !important; margin-bottom: 5px; }
-        .border-danger { border-left-color: #dc3545 !important; }
-        .border-success { border-left-color: #198754 !important; }
+        :root { --primary: #0d6efd; --danger: #dc3545; --success: #198754; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .stat-card { transition: transform 0.3s; border: none; border-radius: 15px; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .progress { height: 10px; border-radius: 5px; }
+        .scan-item { border-left: 6px solid #ccc; transition: 0.2s; }
+        .scan-item:hover { background-color: #f8f9fa; }
+        .badge-faille { font-size: 0.75rem; text-transform: uppercase; }
+        .code-preview { background: #212529; color: #f8f9fa; border-radius: 8px; padding: 12px; font-family: 'Courier New', monospace; }
     </style>
 </head>
-<body class="bg-light container py-4">
-    <div class="row mb-4 text-center">
+<body class="container py-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-dark"><i class="fas fa-shield-halved text-primary me-2"></i>Dashboard d'Audit</h2>
+        <span class="badge bg-dark p-2">Session Active</span>
+    </div>
+
+    <div class="row mb-5 g-4">
         <div class="col-md-4">
-            <div class="card p-3 shadow-sm">
-                <small class="text-muted">TOTAL</small>
-                <h3 class="fw-bold">{{ total }}</h3>
+            <div class="card stat-card shadow-sm p-4 text-center">
+                <i class="fas fa-layer-group text-secondary mb-2 fa-2x"></i>
+                <div class="text-muted small">TOTAL ANALYSES</div>
+                <h2 class="fw-bold m-0">{{ total }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-3 shadow-sm bg-danger text-white">
-                <small>PROBLEMES</small>
-                <h3 class="fw-bold">{{ alerts }}</h3>
+            <div class="card stat-card shadow-sm p-4 text-center bg-white border-bottom border-danger border-4">
+                <i class="fas fa-bug text-danger mb-2 fa-2x"></i>
+                <div class="text-muted small">VULNÉRABILITÉS</div>
+                <h2 class="fw-bold m-0 text-danger">{{ alerts }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-3 shadow-sm bg-success text-white">
-                <small>SCORE</small>
-                <h3 class="fw-bold">{{ health }}%</h3>
+            <div class="card stat-card shadow-sm p-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">SCORE DE SANTÉ</span>
+                    <span class="fw-bold text-success">{{ health }}%</span>
+                </div>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ health }}%"></div>
+                </div>
+                <small class="text-muted italic">Fiabilité du code source</small>
             </div>
         </div>
     </div>
 
-    <div class="card p-4 shadow-sm mb-4">
+    <div class="card shadow-lg border-0 rounded-4 p-4 mb-5 bg-white">
+        <h5 class="mb-3 fw-bold">Nouvelle Analyse</h5>
         <form action="/scan" method="POST">
-            <textarea name="code" class="form-control mb-3" rows="5" placeholder="Collez le code ici..."></textarea>
-            <button type="submit" class="btn btn-primary w-100 fw-bold">LANCER LE TEST</button>
+            <div class="mb-3 position-relative">
+                <textarea name="code" class="form-control" rows="6" 
+                    placeholder="Collez ici votre script Python ou SQL à auditer..." 
+                    style="border-radius: 10px; border: 1px solid #ddd;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm">
+                <i class="fas fa-magnifying-glass me-2"></i>LANCER L'AUDIT SÉCURITÉ
+            </button>
         </form>
     </div>
 
-    <h5 class="mb-3">Analyses recentes</h5>
-    <div class="list-group">
+    <div class="d-flex align-items-center mb-3">
+        <i class="fas fa-history me-2 text-secondary"></i>
+        <h5 class="m-0 fw-bold">Journal des Événements</h5>
+    </div>
+
+    <div class="list-group shadow-sm">
         {% for s in scans %}
-        <div class="list-group-item shadow-sm {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold {{ 'text-danger' if 'Alerte' in s.result else 'text-success' }}">
-                    {{ s.result }}
-                </span>
-                <small class="text-muted">{{ s.timestamp }}</small>
+        <div class="list-group-item scan-item mb-2 rounded-3 border-0 shadow-sm 
+            {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}" 
+            style="border-left-width: 8px !important;">
+            
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="fw-bold {{ 'text-danger' if 'Alerte' in s.result else 'text-success' }}">
+                        <i class="fas {{ 'fa-triangle-exclamation' if 'Alerte' in s.result else 'fa-check-circle' }} me-1"></i>
+                        {{ s.result }}
+                    </span>
+                </div>
+                <span class="badge bg-light text-dark border"><i class="far fa-clock me-1"></i>{{ s.timestamp }}</span>
             </div>
-            <pre class="mt-2 small text-secondary bg-light p-2 rounded">{{ s.code[:150] }}</pre>
+
+            <div class="code-preview small">
+                <code>{{ s.code[:200] }}...</code>
+            </div>
         </div>
         {% endfor %}
     </div>
+
 </body>
 </html>
