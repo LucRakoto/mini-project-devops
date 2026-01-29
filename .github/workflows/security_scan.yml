@@ -13,9 +13,10 @@ jobs:
           python -c "
           from scanner import VulnerabilityScanner
           s = VulnerabilityScanner()
-          with open('app.py', 'r') as f:
+          # On analyse app.py mais le scanner est maintenant briefé pour etre pro
+          with open('app.py', 'r', encoding='utf-8') as f:
               code = f.read()
-          res = s.scan(code)
+          res = s.scan(code, 'app.py')
           print(f'Verdict: {res}')
           if 'Alerte' in res:
               exit(1)

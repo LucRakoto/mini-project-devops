@@ -4,10 +4,12 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - REDIS_PASSWORD=pass123 # C'est ici que Python va lire la valeur
+      # On passe la variable a Python sans ecrire le secret ici
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-pass123} 
     depends_on:
       - redis
 
   redis:
     image: redis:alpine
-    command: redis-server --requirepass pass123 # Mot de passe Redis
+    # On protege Redis avec la meme variable
+    command: redis-server --requirepass ${REDIS_PASSWORD:-pass123}
