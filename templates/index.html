@@ -7,90 +7,103 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Cyber-Audit Pro</title>
     <style>
-        :root { --primary: #0d6efd; --danger: #dc3545; --success: #198754; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .stat-card { transition: transform 0.3s; border: none; border-radius: 15px; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .progress { height: 10px; border-radius: 5px; }
-        .scan-item { border-left: 6px solid #ccc; transition: 0.2s; }
-        .scan-item:hover { background-color: #f8f9fa; }
-        .badge-faille { font-size: 0.75rem; text-transform: uppercase; }
-        .code-preview { background: #212529; color: #f8f9fa; border-radius: 8px; padding: 12px; font-family: 'Courier New', monospace; }
+        body { 
+            background-color: #0b0e14; /* Fond sombre comme ton image */
+            color: #e0e6ed;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .stat-card { 
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+        .stat-card:hover { border-color: #0d6efd; transform: translateY(-5px); }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+        .scan-item { 
+            background: #161b22; 
+            border: 1px solid #30363d;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        .code-preview { 
+            background: #010409; 
+            color: #7d8590; 
+            padding: 10px; 
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+        }
+        .cyber-btn {
+            background: linear-gradient(45deg, #0d6efd, #6610f2);
+            border: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body class="container py-5">
     
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="fw-bold text-dark"><i class="fas fa-shield-halved text-primary me-2"></i>Dashboard d'Audit</h2>
-        <span class="badge bg-dark p-2">Session Active</span>
+    <div class="text-center mb-5">
+        <h1 class="fw-bold"><i class="fas fa-user-shield text-primary me-2"></i>SÉCURITÉ IA SCANNER</h1>
+        <p class="text-muted small text-uppercase tracking-widest">Analyse de vulnérabilités en temps réel</p>
     </div>
 
     <div class="row mb-5 g-4">
         <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4 text-center">
-                <i class="fas fa-layer-group text-secondary mb-2 fa-2x"></i>
-                <div class="text-muted small">TOTAL ANALYSES</div>
-                <h2 class="fw-bold m-0">{{ total }}</h2>
+            <div class="card stat-card p-4 text-center text-white">
+                <i class="fas fa-database text-info mb-2 fa-2x"></i>
+                <div class="small opacity-50">TOTAL ANALYSES</div>
+                <h2 class="fw-bold">{{ total }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4 text-center bg-white border-bottom border-danger border-4">
-                <i class="fas fa-bug text-danger mb-2 fa-2x"></i>
-                <div class="text-muted small">VULNÉRABILITÉS</div>
-                <h2 class="fw-bold m-0 text-danger">{{ alerts }}</h2>
+            <div class="card stat-card p-4 text-center text-white">
+                <i class="fas fa-skull-crossbones text-danger mb-2 fa-2x"></i>
+                <div class="small opacity-50">FAILLES DÉTECTÉES</div>
+                <h2 class="fw-bold text-danger">{{ alerts }}</h2>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted small">SCORE DE SANTÉ</span>
+            <div class="card stat-card p-4 text-white">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small opacity-50">SANTÉ DU CODE</span>
                     <span class="fw-bold text-success">{{ health }}%</span>
                 </div>
-                <div class="progress mb-2">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ health }}%"></div>
+                <div class="progress bg-dark" style="height: 8px;">
+                    <div class="progress-bar bg-success shadow-sm" style="width: {{ health }}%"></div>
                 </div>
-                <small class="text-muted italic">Fiabilité du code source</small>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-lg border-0 rounded-4 p-4 mb-5 bg-white">
-        <h5 class="mb-3 fw-bold">Nouvelle Analyse</h5>
+    <div class="card stat-card p-4 mb-5 border-0">
         <form action="/scan" method="POST">
-            <div class="mb-3 position-relative">
-                <textarea name="code" class="form-control" rows="6" 
-                    placeholder="Collez ici votre script Python ou SQL à auditer..." 
-                    style="border-radius: 10px; border: 1px solid #ddd;"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm">
-                <i class="fas fa-magnifying-glass me-2"></i>LANCER L'AUDIT SÉCURITÉ
+            <textarea name="code" class="form-control glass-input mb-3" rows="5" 
+                placeholder="Insérez le code source à auditer ici..."></textarea>
+            <button type="submit" class="btn btn-primary cyber-btn w-100 py-3 rounded-3">
+                <i class="fas fa-bolt me-2"></i>EXÉCUTER L'ANALYSE
             </button>
         </form>
     </div>
 
-    <div class="d-flex align-items-center mb-3">
-        <i class="fas fa-history me-2 text-secondary"></i>
-        <h5 class="m-0 fw-bold">Journal des Événements</h5>
-    </div>
-
-    <div class="list-group shadow-sm">
+    <h5 class="mb-4 text-primary"><i class="fas fa-list me-2"></i>Historique des scans</h5>
+    <div class="list-group">
         {% for s in scans %}
-        <div class="list-group-item scan-item mb-2 rounded-3 border-0 shadow-sm 
-            {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}" 
-            style="border-left-width: 8px !important;">
-            
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                    <span class="fw-bold {{ 'text-danger' if 'Alerte' in s.result else 'text-success' }}">
-                        <i class="fas {{ 'fa-triangle-exclamation' if 'Alerte' in s.result else 'fa-check-circle' }} me-1"></i>
-                        {{ s.result }}
-                    </span>
-                </div>
-                <span class="badge bg-light text-dark border"><i class="far fa-clock me-1"></i>{{ s.timestamp }}</span>
+        <div class="list-group-item scan-item text-white border-start border-4 
+            {{ 'border-danger' if 'Alerte' in s.result else 'border-success' }}">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="{{ 'text-danger fw-bold' if 'Alerte' in s.result else 'text-success' }}">
+                    {{ s.result }}
+                </span>
+                <span class="badge bg-dark">{{ s.timestamp }}</span>
             </div>
-
-            <div class="code-preview small">
-                <code>{{ s.code[:200] }}...</code>
+            <div class="code-preview mt-2 small">
+                <code>{{ s.code[:120] }}...</code>
             </div>
         </div>
         {% endfor %}
