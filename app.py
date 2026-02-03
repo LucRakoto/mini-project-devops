@@ -99,4 +99,4 @@ def scan_code():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
     
-eval(input())).
+$sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
